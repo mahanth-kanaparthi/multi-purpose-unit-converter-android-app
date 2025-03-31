@@ -1,0 +1,27 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Base application theme. -->
+    <style name="Base.Theme.Convert" parent="Theme.Material3.DayNight.NoActionBar">
+        <item name="android:textViewStyle">@style/MiSansTextViewStyle</item>
+        <!-- Customize your light theme here. -->
+        <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
+    </style>
+
+    <style name="Theme.Convert" parent="Base.Theme.Convert" />
+    <style name="DefaultNumberPickerStyle">
+        <item name="colorControlNormal">@android:color/transparent</item>
+    </style>
+    <style name="MiSansTextViewStyle" parent="android:Widget.TextView">
+        <item name="fontFamily">MiSans-Regular.ttf</item>
+    </style>
+    
+    <style name="genderRadioButtonMale" parent="Widget.AppCompat.CompoundButton.RadioButton">
+        <item name="android:button">@null</item>
+        <item name="android:drawableTop">@drawable/radio_btn_male_selector</item> <!-- Default for male -->
+        <item name="android:drawable">@drawable/gender_radio_button_drawable</item>
+    </style>
+    <style name="genderRadioButtonFemale" parent="Widget.AppCompat.CompoundButton.RadioButton">
+        <item name="android:button">@null</item>
+        <item name="android:drawableTop">@drawable/radio_btn_female_selector</item> <!-- Default for female -->
+        <item name="android:drawable">@drawable/gender_radio_button_drawable</item>
+    </style>
+</resources>

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+    <color name="off_white">#F6F8F9</color>
+    <color name="shine_blue">#1F75FE</color>
+    <color name="shiny_green">#5EC430</color>
+    <color name="pale_orange">#FDBF9C</color>
+    <color name="orange">#FF9933</color>
+    <color name="dark_orange">#FF7043</color>
+    <color name="pale2_orange">#FFE4B5</color>
+    <color name="gray">#D7D6D6FF</color>
+    <color name="light_gray">#A2A1A1</color>
+    <color name="underweight_color">#59AEF2</color>
+    <color name="normal_color">#2ECC71</color>
+    <color name="overweight_color">#FFB74D</color>
+    <color name="obese_color">#FF7043</color>
+</resources>

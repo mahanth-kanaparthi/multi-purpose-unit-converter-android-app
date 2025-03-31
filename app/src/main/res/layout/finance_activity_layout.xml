@@ -1,0 +1,251 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/finance_activity_layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="16dp"
+    android:background="@color/off_white">
+
+    <RelativeLayout
+        android:id="@+id/finance_toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.0">
+
+        <ImageButton
+            android:id="@+id/backBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_centerVertical="true"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:clickable="true"
+            android:contentDescription="@string/back_btn_desc"
+            android:focusable="true"
+            android:minWidth="48dp"
+            android:minHeight="48dp"
+            android:paddingStart="0dp"
+            android:paddingTop="16dp"
+            android:paddingEnd="16dp"
+            android:paddingBottom="16dp"
+            android:src="@drawable/ic_back" />
+
+        <TextView
+            android:id="@+id/finance_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:text="@string/finance_title"
+            android:textColor="#000000"
+            android:textSize="25sp" />
+    </RelativeLayout>
+
+    <!-- Principal Input -->
+
+    <TextView
+        android:id="@+id/finance_type"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:paddingBottom="8dp"
+        android:text="@string/finance_type_principal"
+        android:textSize="20sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/finance_toolbar" />
+
+    <EditText
+        android:id="@+id/et_amount"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:hint="@string/hint_enter_amount"
+        android:inputType="numberDecimal"
+        android:minWidth="48dp"
+        android:minHeight="48dp"
+        app:layout_constraintEnd_toEndOf="@+id/finance_type"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="@+id/finance_type"
+        app:layout_constraintTop_toBottomOf="@+id/finance_type" />
+
+    <!-- Loan/Investment Radio Buttons -->
+
+    <!-- Interest Rate -->
+
+    <RadioGroup
+        android:id="@+id/rg_finance_type"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:orientation="horizontal"
+        android:paddingTop="16dp"
+        app:layout_constraintEnd_toEndOf="@+id/et_amount"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="@+id/et_amount"
+        app:layout_constraintTop_toBottomOf="@+id/et_amount">
+
+        <RadioButton
+            android:id="@+id/rb_loan"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:checked="true"
+            android:text="@string/finance_loan_rb" />
+
+        <RadioButton
+            android:id="@+id/rb_investment"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:text="@string/finance_investment_rb" />
+    </RadioGroup>
+
+
+    <RelativeLayout
+        android:id="@+id/rl_interest_rate_group"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        app:layout_constraintEnd_toEndOf="@+id/rg_finance_type"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="@+id/rg_finance_type"
+        app:layout_constraintTop_toBottomOf="@+id/rg_finance_type">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:paddingTop="16dp"
+            android:text="@string/tv_interest_rate"
+            android:textSize="16sp"
+            tools:layout_editor_absoluteX="-8dp"
+            tools:layout_editor_absoluteY="406dp" />
+
+        <EditText
+            android:id="@+id/et_interest_rate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:background="@android:drawable/editbox_background"
+            android:hint="@string/hint_interest_rate"
+            android:inputType="numberDecimal"
+            android:minWidth="48dp"
+            android:minHeight="48dp"
+            tools:layout_editor_absoluteX="1dp"
+            tools:layout_editor_absoluteY="394dp" />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/rl_duration_group"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        app:layout_constraintEnd_toEndOf="@+id/rl_interest_rate_group"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="@+id/rl_interest_rate_group"
+        app:layout_constraintTop_toBottomOf="@+id/rl_interest_rate_group">
+
+        <!-- Duration -->
+        <TextView
+            android:id="@+id/tv_duration"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_centerVertical="true"
+            android:minWidth="48dp"
+            android:minHeight="48dp"
+            android:paddingTop="16dp"
+            android:text="@string/tv_duration"
+            android:textSize="16sp" />
+
+        <TextView
+            android:id="@+id/tv_duration_dialog"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_toStartOf="@+id/list_specifier_symbol"
+            android:background="@android:drawable/editbox_background"
+            android:clickable="true"
+            android:focusable="true"
+            android:minWidth="48dp"
+            android:minHeight="48dp"
+            android:padding="12dp"
+            android:text="@string/tv_duration_dialog"
+            tools:layout_editor_absoluteX="0dp"
+            tools:layout_editor_absoluteY="449dp" />
+
+        <ImageView
+            android:id="@+id/list_specifier_symbol"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:contentDescription="@string/list_specifier_symbol"
+            app:srcCompat="@drawable/list_specifier" />
+
+    </RelativeLayout>
+
+    <!-- Investment Type (only visible when 'Investment' is selected) -->
+    <RelativeLayout
+        android:id="@+id/rl_investmentType_group"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        app:layout_constraintEnd_toEndOf="@+id/rl_duration_group"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="@+id/rl_duration_group"
+        app:layout_constraintTop_toBottomOf="@+id/rl_duration_group"
+        android:visibility="gone">
+
+        <TextView
+            android:id="@+id/tv_investment_type"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_centerVertical="true"
+            android:minWidth="48dp"
+            android:minHeight="48dp"
+            android:paddingTop="16dp"
+            android:text="@string/tv_investment_type"
+            android:textSize="16sp" />
+
+        <Spinner
+            android:id="@+id/sp_investment_type"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:layout_marginTop="8dp"
+            android:entries="@array/investment_types"
+            android:minWidth="48dp"
+            android:minHeight="48dp" />
+
+    </RelativeLayout>
+
+
+    <!-- Calculate Button -->
+    <Button
+        android:id="@+id/btn_calculate"
+        android:layout_width="280dp"
+        android:layout_height="wrap_content"
+        android:backgroundTint="#FFA500"
+        android:text="@string/btn_calculate"
+        android:textColor="#FFFFFF"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.486"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/rl_investmentType_group"
+        app:layout_constraintVertical_bias="1.0" />
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>
