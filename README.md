@@ -8,7 +8,11 @@ It also features specialized conversations like Currency Converter, BMI Calculat
 uses api calls to fetch daily currencies once in a day and stores them in the shared preferences and access them whenever it needs. The exchange rates are provided by "exchangeratesapi.io".
 For api calls it uses "retrofit" and "Gson" Libraries.
 
-For the rest conversations, it is locally done using various unit factors hashmaps(contains unit and factor based on base unit). 
+## For the rest conversions : 
+it is locally done using various unit factors hashmaps(contains unit and factor based on base unit). 
+
+## Specialized Calculators :
+BMI Calculator, GST Calculator, Finance Calculations like EMI and Investments. 
 
 All the layouts are made using XML
 Various layouts like ConstraintLayout, RelativeLayout, LinearLayout, GridLayout, ScrollLayout are used in creating layouts for different activities. 
