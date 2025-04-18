@@ -1,22 +1,110 @@
-# multi-purpose-unit-converter-android-app
-The Multipurpose Unit Converter is an android application designed to convert various unit metrics quickly and efficiently.
+# Multi-Purpose Unit Converter Android App
 
-This app helps users convert units like Area, Length, Mass, Time, Data, Date, Discount, Speed, Temperature, Volume, Force, Energy, Pressure, Numeral Systems (like binary, decimal, hexadecimal, octal) all within a single Android application created using Java. 
-It also features specialized conversations like Currency Converter, BMI Calculator, GST Calculator, Finance Calculations like EMI and Investments. 
+A comprehensive Android application developed by **Mahanth Kanaparthi** using **Java** and **Gradle Kotlin DSL**. This app offers an all-in-one solution for various unit conversions and useful financial and health utilities.
 
-## Specially Currency Converter :
-uses api calls to fetch daily currencies once in a day and stores them in the shared preferences and access them whenever it needs. The exchange rates are provided by "exchangeratesapi.io".
-For api calls it uses "retrofit" and "Gson" Libraries.
+---
 
-## For the rest conversions : 
-it is locally done using various unit factors hashmaps(contains unit and factor based on base unit). 
+## Table of Contents
+- [Purpose](#purpose)
+- [Key Features](#key-features)
+- [Architecture](#architecture)
+- [Build & Project Files](#build--project-files)
+- [Testing](#testing)
 
-## Specialized Calculators :
-BMI Calculator, GST Calculator, Finance Calculations like EMI and Investments. 
+---
 
-All the layouts are made using XML
-Various layouts like ConstraintLayout, RelativeLayout, LinearLayout, GridLayout, ScrollLayout are used in creating layouts for different activities. 
+## Purpose
 
-This application features smooth animation and beautiful dialogs for items selection.
+The application is designed to help users perform a wide range of **unit conversions** and **calculations** efficiently with a clean, user-friendly interface.
 
-It is developed by taking care in producing accurate calculations for financial conversions.
+---
+
+## Key Features
+
+### Unit Conversions
+- **Area**
+- **Length**
+- **Mass**
+- **Time**
+- **Speed**
+- **Temperature**
+- **Volume**
+- **Data**
+- **Force**
+- **Energy**
+- **Pressure**
+- **Numeral Systems**
+- **Date Calculations**
+- **Discount Calculator**
+
+### Finance Tools
+- **EMI Calculator**
+- **Investment Calculator**
+- **GST Calculator**
+
+### Health Tool
+- **BMI Calculator** with animated result display
+
+### Currency Converter
+- Powered by [exchangeratesapi.io](https://exchangeratesapi.io)
+- Uses **Retrofit** and **Gson**
+- Stores rates in **SharedPreferences** for **offline access**
+
+---
+
+## Architecture
+
+Follows **MVC Architecture**:
+
+### Model
+- Handles conversion data and logic
+
+### View
+- XML layouts for UI
+- Custom themes, drawables, and animations
+
+### Controller
+- Java classes for each feature's logic and interaction
+
+### Structure
+```
+com.mk.convert/
+├── controller/        # Handles user interactions
+├── convert/           # Activities for each conversion
+├── model/             # Data models and logic
+└── utils/             # Utility classes and dialogs
+```
+
+---
+
+## Build & Project Files
+
+- Written in **Java**
+- Uses **Gradle Kotlin DSL**
+- Project configuration:
+  - `build.gradle.kts`
+  - `settings.gradle.kts`
+  - `libs.versions.toml`
+- Gradle wrapper included:
+  - `gradlew`, `gradlew.bat`, `gradle-wrapper.properties`
+
+---
+
+## Testing
+
+- **Unit Tests**: Located in `src/test/`
+- **Instrumented Tests**: Located in `src/androidTest/`
+
+---
+
+## Conclusion
+
+This Android application demonstrates advanced development skills with:
+- Modular architecture
+- Accurate and efficient conversion logic
+- Beautiful, responsive UI
+- Offline capabilities and API integration
+
+Feel free to explore and contribute!
+
+---
