@@ -2,6 +2,11 @@
 
 A comprehensive Android application developed by **Mahanth Kanaparthi** using **Java** and **Gradle Kotlin DSL**. This app offers an all-in-one solution for various unit conversions and useful financial and health utilities.
 
+![AppIcon](temp/ic_launcher_round.webp)
+ Converter
+
+Note: It is inspired from Xiaomi's Calculator App
+
 ---
 
 ## Table of Contents
@@ -10,6 +15,7 @@ A comprehensive Android application developed by **Mahanth Kanaparthi** using **
 - [Architecture](#architecture)
 - [Build & Project Files](#build--project-files)
 - [Testing](#testing)
+- [Screenshots](#screenshots)
 
 ---
 
@@ -97,6 +103,71 @@ com.mk.convert/
 
 ---
 
+## Screenshots
+<table>
+  <tr>
+      <td>
+        <img src="docs/main-activity-layout(home).jpg" alt="Main" style="width:200px; height:400px;">
+      </td>
+      <td>
+        <img src="docs/currency-converter-layout.jpg" alt="Currency-Converter" style="width:200px; height:400px;">
+      </td>
+      <td>
+        <img src="docs/length-converter-layout.jpg" alt="Length-Converter" style="width:200px; height:400px;">
+      </td>
+  </tr>
+
+  <tr>
+      <td>
+        <img src="docs/date-calculator-layout.jpg" alt="Date-Calculator" style="width:200px; height:400px;">
+      </td>
+      <td>
+        <img src="docs/finance-calculator-emi-entering-data.jpg" alt="EMI-Calculator" style="width:200px; height:400px;">
+      </td>
+      <td>
+        <img src="docs/finance-calculator-emi-result.jpg" alt="EMI-Calculator-Result" style="width:200px; height:400px;">
+      </td>
+  </tr>
+
+  <tr>
+      <td>
+        <img src="docs/finance-calculator-investment-entering-data.jpg" alt="Investment-Calculator" style="width:200px; height:400px;">
+      </td>
+      <td>
+        <img src="docs/finance-calculator-investment-result.jpg" alt="Investment-Calculator-Result" style="width:200px; height:400px;">
+      </td>
+      <td>
+        <img src="docs/discount-calculator-layout.jpg" alt="Discount-Calculator" style="width:200px; height:400px;">
+      </td>
+  </tr>
+
+  <tr>
+      <td>
+        <img src="docs/numeral-system-layout.jpg" alt="Numerical-System" style="width:200px; height:400px;">
+      </td>
+      <td>
+        <img src="docs/temperature-converter-layout.jpg" alt="Temperature-Converter" style="width:200px; height:400px;">
+      </td>
+      <td>
+        <img src="docs/gst-calculator-layout.jpg" alt="GST-Calculator" style="width:200px; height:400px;">
+      </td>
+  </tr>
+
+  <tr>
+      <td>
+        <img src="docs/bmi-calculator-layout.jpg" alt="BMI-Calculator" style="width:200px; height:400px;">
+      </td>
+      <td>
+        <img src="docs/bmi-calculator-user-entering-details.jpg" alt="BMI-Calculator-Entering-Data" style="width:200px; height:400px;">
+      </td>
+      <td>
+        <img src="docs/bmi-calculator-results.jpg" alt="BMI-Calculator-Result" style="width:200px; height:400px;">
+      </td>
+  </tr>
+</table>
+
+---
+
 ## Conclusion
 
 This Android application demonstrates advanced development skills with:
@@ -104,6 +175,7 @@ This Android application demonstrates advanced development skills with:
 - Accurate and efficient conversion logic
 - Beautiful, responsive UI
 - Offline capabilities and API integration
+- Inspired from Xiaomi's Calculator App
 
 Feel free to explore and contribute!
 
