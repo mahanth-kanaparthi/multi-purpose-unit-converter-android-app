@@ -2,7 +2,7 @@
 
 A comprehensive Android application developed by **Mahanth Kanaparthi** using **Java** and **Gradle Kotlin DSL**. This app offers an all-in-one solution for various unit conversions and useful financial and health utilities.
 
-![AppIcon](temp/ic_launcher_round.webp)
+![AppIcon](temp/ic_launcher_round.jpg)
  Converter
 
 Note: It is inspired from Xiaomi's Calculator App
