@@ -173,8 +173,7 @@ public class CurrencyConverterModel {
         Call<JsonObject> getLatestRates(@retrofit2.http.Query("access_key") String apiKey);
     }
     public Map<String, String> getCountriesList() {
-        Map<String,String> map = new TreeMap<>(countriesList);
-        return map;
+        return new TreeMap<>(countriesList);
     }
     public Map<String,Double> getExchangeRatesMap(){
         return exchangeRatesMap;

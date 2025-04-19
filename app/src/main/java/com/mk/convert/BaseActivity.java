@@ -17,6 +17,9 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.mk.utils.ExpressionEvaluator;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 public abstract class BaseActivity extends AppCompatActivity {
     protected ImageButton backBtn;
     protected Button btn_1,btn_2,btn_3,btn_4,btn_5,btn_6,btn_7,btn_8,btn_9,btn_clear,btn_plus,btn_minus,btn_multiply,btn_divide,btn_equals,btn_backspace,btn_percent,btn_0,btn_00,btn_dot;
@@ -127,6 +130,7 @@ public abstract class BaseActivity extends AppCompatActivity {
                     || currentText.endsWith("×")
                     || currentText.endsWith("÷");
 
+            boolean zeroAndMinus = currentText.length() == 1 && (currentText.equals("0") || currentText.equals("-"));
             switch(selectedButton){
 
                 case "1":
@@ -138,7 +142,7 @@ public abstract class BaseActivity extends AppCompatActivity {
                         System.out.println(currentText);
                     }
                     else
-                        selectedTextViewValue.setText(currentText + "1");
+                        selectedTextViewValue.setText(String.format("%s1", currentText));
                     break;
                 case "2":
                     if(currentText.equals("1") && firstTimePressed){
@@ -147,7 +151,7 @@ public abstract class BaseActivity extends AppCompatActivity {
                     }else if(currentText.equals("0"))
                         selectedTextViewValue.setText("2");
                     else
-                        selectedTextViewValue.setText(currentText + 2);
+                        selectedTextViewValue.setText(String.format("%s2", currentText));
                     break;
                 case "3":
                     if(currentText.equals("1") && firstTimePressed){
@@ -156,7 +160,7 @@ public abstract class BaseActivity extends AppCompatActivity {
                     }else if(currentText.equals("0"))
                         selectedTextViewValue.setText("3");
                     else
-                        selectedTextViewValue.setText(currentText + 3);
+                        selectedTextViewValue.setText(String.format("%s3", currentText));
                     break;
                 case "4":
                     if(currentText.equals("1") && firstTimePressed){
@@ -165,7 +169,7 @@ public abstract class BaseActivity extends AppCompatActivity {
                     }else if(currentText.equals("0"))
                         selectedTextViewValue.setText("4");
                     else
-                        selectedTextViewValue.setText(currentText + 4);
+                        selectedTextViewValue.setText(String.format("%s4", currentText));
                     break;
                 case "5":
                     if(currentText.equals("1") && firstTimePressed){
@@ -174,7 +178,7 @@ public abstract class BaseActivity extends AppCompatActivity {
                     }else if(currentText.equals("0"))
                         selectedTextViewValue.setText("5");
                     else
-                        selectedTextViewValue.setText(currentText + 5);
+                        selectedTextViewValue.setText(String.format("%s5", currentText));
                     break;
                 case "6":
                     if(currentText.equals("1") && firstTimePressed){
@@ -183,7 +187,7 @@ public abstract class BaseActivity extends AppCompatActivity {
                     }else if(currentText.equals("0"))
                         selectedTextViewValue.setText("6");
                     else
-                        selectedTextViewValue.setText(currentText + 6);
+                        selectedTextViewValue.setText(String.format("%s6", currentText));
                     break;
                 case "7":
                     if(currentText.equals("1") && firstTimePressed){
@@ -192,7 +196,7 @@ public abstract class BaseActivity extends AppCompatActivity {
                     }else if(currentText.equals("0"))
                         selectedTextViewValue.setText("7");
                     else
-                        selectedTextViewValue.setText(currentText + 7);
+                        selectedTextViewValue.setText(String.format("%s7", currentText));
 
                     break;
                 case "8":
@@ -202,7 +206,7 @@ public abstract class BaseActivity extends AppCompatActivity {
                     }else if(currentText.equals("0"))
                         selectedTextViewValue.setText("8");
                     else
-                        selectedTextViewValue.setText(currentText + 8);
+                        selectedTextViewValue.setText(String.format("%s8", currentText));
                     break;
                 case "9":
                     if(currentText.equals("1") && firstTimePressed){
@@ -211,7 +215,7 @@ public abstract class BaseActivity extends AppCompatActivity {
                     }else if(currentText.equals("0"))
                         selectedTextViewValue.setText("9");
                     else
-                        selectedTextViewValue.setText(currentText + 9);
+                        selectedTextViewValue.setText(String.format("%s9", currentText));
                     break;
                 case "0":
                     if(currentText.equals("1") && firstTimePressed){
@@ -220,7 +224,7 @@ public abstract class BaseActivity extends AppCompatActivity {
                     }else if(currentText.equals("0"))
                         selectedTextViewValue.setText("0");
                     else
-                        selectedTextViewValue.setText(currentText + 0);
+                        selectedTextViewValue.setText(String.format("%s0", currentText));
 
                     break;
                 case "00":
@@ -230,45 +234,54 @@ public abstract class BaseActivity extends AppCompatActivity {
                     }else if(currentText.equals("0"))
                         selectedTextViewValue.setText("0");
                     else
-                        selectedTextViewValue.setText(currentText + "00");
+                        selectedTextViewValue.setText(String.format("%s00", currentText));
                     break;
                 case ".":
                     if(!currentText.contains(".")){
-                        selectedTextViewValue.setText(currentText + ".");
+                        selectedTextViewValue.setText(String.format("%s.", currentText));
                     }
                     break;
                 case "+":
-                    if(!operatorPressed) {
-                        selectedTextViewValue.setText(currentText + "+");
-                        operatorPressed = true;
-                    }else if(operatorPressed){
-                        selectedTextViewValue.setText(currentText.substring(0, currentText.length() - 1) + "+");
-                    }
+                    if(zeroAndMinus)
+                        selectedTextViewValue.setText("0+");
+                    else if(endsWithOperator(currentText) && !currentText.endsWith("+")){
+                        selectedTextViewValue.setText(String.format("%s+", currentText.substring(0, currentText.length() - 1)));
+                    }else if(!endsWithOperator(currentText))
+                        selectedTextViewValue.setText(String.format("%s+", currentText));
 
                     break;
                 case "-":
-                    if(!operatorPressed) {
-                        selectedTextViewValue.setText(currentText + "-");
-                        operatorPressed = true;
-                    }else if(operatorPressed){
-                        selectedTextViewValue.setText(currentText.substring(0, currentText.length() - 1) + "-");
-                    }
+                    if(zeroAndMinus)
+                        selectedTextViewValue.setText("-");
+                    else if(endsWithOperator(currentText) && !currentText.endsWith("-")){
+                        selectedTextViewValue.setText(String.format("%s-", currentText.substring(0, currentText.length() - 1)));
+                    }else if(!endsWithOperator(currentText))
+                        selectedTextViewValue.setText(String.format("%s-", currentText));
+
                     break;
                 case "×":
-                    if(!operatorPressed) {
-                        selectedTextViewValue.setText(currentText + "×");
-                        operatorPressed = true;
-                    }else if(operatorPressed){
-                        selectedTextViewValue.setText(currentText.substring(0, currentText.length() - 1) + "×");
+                    if(zeroAndMinus)
+                        selectedTextViewValue.setText("0×");
+                    else if(endsWithOperator(currentText.replace("×","*")) && currentText.endsWith("×")){
+
                     }
+                    else if(endsWithOperator(currentText) && !currentText.endsWith("×")){
+                        selectedTextViewValue.setText(String.format("%s×", currentText.substring(0, currentText.length() - 1)));
+                    }else if(!endsWithOperator(currentText))
+                        selectedTextViewValue.setText(String.format("%s×", currentText));
                     break;
                 case "÷":
-                    if(!operatorPressed) {
-                        selectedTextViewValue.setText(currentText + "÷");
-                        operatorPressed = true;
-                    }else if(operatorPressed){
-                        selectedTextViewValue.setText(currentText.substring(0, currentText.length() - 1) + "÷");
+
+                    if(zeroAndMinus)
+                        selectedTextViewValue.setText("0÷");
+                    else if(endsWithOperator(currentText.replace("÷","/"))
+                            && currentText.endsWith("÷")){
+
                     }
+                    else if(endsWithOperator(currentText) && !currentText.endsWith("÷")){
+                        selectedTextViewValue.setText(String.format("%s÷", currentText.substring(0, currentText.length() - 1)));
+                    }else if(!endsWithOperator(currentText))
+                        selectedTextViewValue.setText(String.format("%s÷", currentText));
                     break;
                 case "⌫k":
                     if(currentText.equals("1") || currentText.equals("0"))
@@ -299,13 +312,23 @@ public abstract class BaseActivity extends AppCompatActivity {
                         } else if (currentText.startsWith("-") && currentText.length() == 1) {
                             selectedTextViewValue.setText("0");
                         } else {
-                            selectedTextViewValue.setText("-" + currentText);
+                            selectedTextViewValue.setText(String.format("-%s", currentText));
                         }
                     }
 
             }
         }
         else System.out.println("selected view is null!");
+    }
+
+    private boolean endsWithOperator(String str){
+        if(str == null || str.isEmpty() || (str.length() == 1 && str.contains("0"))){
+            return false;
+        }
+        str = str.replace("÷","/").replace("×","*");
+        Pattern pattern = Pattern.compile("[*/+-]$");
+        Matcher matcher = pattern.matcher(str);
+        return matcher.find();
     }
 
     // Runnable to remove characters
