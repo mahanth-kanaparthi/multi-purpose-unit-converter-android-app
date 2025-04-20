@@ -15,8 +15,10 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.mk.utils.CallbackDialog;
 import com.mk.utils.ExpressionEvaluator;
 
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -31,6 +33,8 @@ public abstract class BaseActivity extends AppCompatActivity {
     protected final Handler handler = new Handler(Looper.getMainLooper());
 
     protected boolean isConversionInProgress = false;
+
+    Map<String, String> dataMap;
 
 
     protected void initializeResources(){
@@ -396,6 +400,23 @@ public abstract class BaseActivity extends AppCompatActivity {
         });
     }
 
+    public void showDialog(TextView unitName,TextView unitCode){
+        // get map from model
+        //MapDialog.showMapDialog(this, map, unitName,unitCode);
+        if(dataMap != null) {
+            CallbackDialog.showMapDialog(this, dataMap, unitName, unitCode, new CallbackDialog.OnItemSelectedListener() {
+                @Override
+                public void onItemSelected(String key, String value) {
+                    // Handle the selected item here
+                    if(selectedTextViewValue != null) {
+                        updateConvertedValues(selectedTextViewValue);
+                    }
+                }
+            });
+        }
+    }
+
     protected abstract void updateConvertedValues(TextView selectedValue);
+
 
 }

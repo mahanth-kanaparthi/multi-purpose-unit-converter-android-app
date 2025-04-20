@@ -4,20 +4,21 @@ package com.mk.controller;
 import com.mk.model.CurrencyConverterModel;
 import com.mk.convert.CurrencyConverterActivity;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 public class CurrencyConverterController {
-    private CurrencyConverterModel model;
-    private CurrencyConverterActivity view;
+    private final CurrencyConverterModel model;
+    private final CurrencyConverterActivity view;
 
-    public CurrencyConverterController(CurrencyConverterActivity view) {
+    public CurrencyConverterController(CurrencyConverterActivity view, CurrencyConverterModel model) {
         this.view = view;
-        model = new CurrencyConverterModel(view);
+        this.model = model;
 
     }
     public void handleButtonClick(double amount,String fromCurrency, String toCurrency1, String toCurrency2){
-        List<Double> convertedAmounts = model.convertCurrency(amount, fromCurrency, toCurrency1, toCurrency2);
-        view.updateUI(convertedAmounts.get(0),convertedAmounts.get(1));
+        List<BigDecimal> convertedAmounts = model.convertCurrency(BigDecimal.valueOf(amount), fromCurrency, toCurrency1, toCurrency2);
+        view.updateUI(convertedAmounts.get(0).doubleValue(),convertedAmounts.get(1).doubleValue());
     }
 }
 

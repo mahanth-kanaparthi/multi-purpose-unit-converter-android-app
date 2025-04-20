@@ -1,18 +1,30 @@
+// CurrencyConverterModel.java
 package com.mk.model;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
+import android.os.Handler;
+import android.os.Looper;
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.util.Log;
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -25,25 +37,18 @@ import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
-import android.widget.Toast;
 
-public class CurrencyConverterModel {
-    private static final String PREF_NAME = "CurrencyPrefs";
-    private static final String KEY_RATES = "exchangeRatesMap";
-    private static final String KEY_DATE = "fetchDate";
-    private static final String KEY_SOURCE = "source";
-    private static final String TAG = "CurrencyConverterModel";
-
-    private final SharedPreferences sharedPreferences;
-    private final Context context;
-
-    // Replace this with your actual API key
+public class CurrencyConverterModel implements Parcelable {
+    private static final String PREF_NAME = "CurrencyPrefsV2";
+    private static final String TAG = "CurrencyConverterModelV2";
     private static final String API_KEY = "facc327a2e014ce090fea191c671cb7c";
+    private static final int MAX_DAYS = 5;
 
-    private  Map<String, Double> exchangeRatesMap;
-    public Map<String, String> countriesList;
+    private transient SharedPreferences sharedPreferences;
+    private transient Context context;
 
-    private final String today = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date());
+    private Map<String, BigDecimal> exchangeRatesMap = new HashMap<>();
+    public Map<String, String> countriesList = new HashMap<>();
     public String exchangeRatesDataNote = "";
 
     public CurrencyConverterModel(Context context) {
@@ -52,14 +57,32 @@ public class CurrencyConverterModel {
         fetchExchangeRates();
     }
 
-    public void fetchExchangeRates() {
+    public void setContext(Context context) {
+        this.context = context;
+        this.sharedPreferences = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
+    }
 
-        // Check if the rates are already fetched today
-        String lastFetchedDate = sharedPreferences.getString(KEY_DATE, null);
-        if (today.equals(lastFetchedDate)) {
-            Log.d(TAG, "Rates already fetched for today.");
-            Toast.makeText(context, "Rates already fetched for today.", Toast.LENGTH_SHORT).show();
-            useStoredData();
+    public static boolean isInternetAvailable(Context context) {
+        ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        if (cm != null) {
+            NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+            return activeNetwork != null && activeNetwork.isConnectedOrConnecting();
+        }
+        return false;
+    }
+
+    public void fetchExchangeRates() {
+        String today = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date());
+
+        if (sharedPreferences.contains(today)) {
+            useStoredData(today);
+            return;
+        }
+
+        if (!isInternetAvailable(context)) {
+            Log.d(TAG, "Offline. Trying to use most recent stored data.");
+            useMostRecentStoredData();
+            showToast("No internet. Using last saved rates.");
             return;
         }
 
@@ -70,138 +93,191 @@ public class CurrencyConverterModel {
 
         ExchangeRatesApi service = retrofit.create(ExchangeRatesApi.class);
 
-        service.getLatestRates(API_KEY).enqueue(new Callback<JsonObject>() {
+        service.getLatestRates(API_KEY).enqueue(new Callback<>() {
             @Override
-            public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
+            public void onResponse(@NonNull Call<JsonObject> call, @NonNull Response<JsonObject> response) {
                 if (response.isSuccessful() && response.body() != null) {
-                    JsonObject jsonResponse = response.body();
-                    String date = jsonResponse.get("date").getAsString();
-                    JsonObject rates = jsonResponse.getAsJsonObject("rates");
+                    JsonObject json = response.body();
+                    String date = json.get("date").getAsString();
+                    JsonObject ratesJson = json.getAsJsonObject("rates");
 
-                    // Convert JSON to Map
-                    exchangeRatesMap = new Gson().fromJson(rates, Map.class);
+                    Map<String, BigDecimal> ratesMap = new HashMap<>();
+                    for (Map.Entry<String, ?> entry : ratesJson.entrySet()) {
+                        ratesMap.put(entry.getKey(), ratesJson.get(entry.getKey()).getAsBigDecimal());
+                    }
 
-                    // Save data in SharedPreferences
-                    saveDataToPreferences(exchangeRatesMap, date, "exchangeratesapi.io");
-                    // update exchangeRatesDataNote
-                    exchangeRatesDataNote = "Exchange rates are provided by exchangeratesapi.io"+"("+date+")";
-
-                    // Create countriesList
-                    countriesList = createCountriesList(exchangeRatesMap);
-                    Log.d(TAG, "Countries List: " + countriesList);
+                    saveRates(date, ratesMap);
+                    cleanupOldEntries();
+                    useStoredData(date);
+                    showToast("Rates updated for " + date);
                 } else {
                     handleFailure();
                 }
             }
 
             @Override
-            public void onFailure(Call<JsonObject> call, Throwable t) {
-                Log.e(TAG, "Failed to fetch exchange rates: " + t.getMessage());
+            public void onFailure(@NonNull Call<JsonObject> call, @NonNull Throwable t) {
+                Log.e(TAG, "API fetch failed: " + t.getMessage());
                 handleFailure();
             }
         });
-
     }
 
-    private void saveDataToPreferences(Map<String, Double> exchangeRatesMap, String date, String source) {
+    private void saveRates(String date, Map<String, BigDecimal> rates) {
+        Map<String, String> stringMap = new HashMap<>();
+        for (Map.Entry<String, BigDecimal> entry : rates.entrySet()) {
+            stringMap.put(entry.getKey(), entry.getValue().toPlainString());
+        }
+
         SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putString(KEY_RATES, new Gson().toJson(exchangeRatesMap));
-        editor.putString(KEY_DATE, date);
-        editor.putString(KEY_SOURCE, source);
+        editor.putString(date, new Gson().toJson(stringMap));
         editor.apply();
     }
 
-    private Map<String, Double> getSavedExchangeRates() {
-        String ratesJson = sharedPreferences.getString(KEY_RATES, null);
-        if (ratesJson != null) {
-            return new Gson().fromJson(ratesJson, Map.class);
+    private void useStoredData(String date) {
+        String json = sharedPreferences.getString(date, null);
+        if (json != null) {
+            Map<String, String> stringMap = new Gson().fromJson(json, Map.class);
+            exchangeRatesMap = new HashMap<>();
+            for (Map.Entry<String, String> entry : stringMap.entrySet()) {
+                exchangeRatesMap.put(entry.getKey(), new BigDecimal(entry.getValue()));
+            }
+            countriesList = createCountriesList(exchangeRatesMap);
+            exchangeRatesDataNote = "Exchange rates provided by exchangeratesapi.io (" + date + ")";
         }
-        return null;
     }
 
-    private Map<String, String> createCountriesList(Map<String, Double> exchangeRatesMap) {
-        Map<String, String> countriesList = new HashMap<>();
-        try {
-            InputStream is = context.getAssets().open("countriesToBeDisplayed.json");
-            InputStreamReader reader = new InputStreamReader(is, StandardCharsets.UTF_8);
-            Map<String, String> countriesToBeDisplayed = new Gson().fromJson(reader, Map.class);
-
-            for (Map.Entry<String, Double> entry : exchangeRatesMap.entrySet()) {
-                String countryCode = entry.getKey();
-                if (countriesToBeDisplayed.containsKey(countryCode)) {
-                    countriesList.put(countryCode, countriesToBeDisplayed.get(countryCode));
-                }
+    private void useMostRecentStoredData() {
+        List<String> dates = new ArrayList<>(sharedPreferences.getAll().keySet());
+        dates.sort(Collections.reverseOrder());
+        for (String date : dates) {
+            if (date.matches("\\d{4}-\\d{2}-\\d{2}")) {
+                useStoredData(date);
+                return;
             }
-        } catch (Exception e) {
-            Log.e(TAG, "Error reading JSON asset: " + e.getMessage());
         }
-        return countriesList;
+        showToast("No saved exchange rate data available.");
+    }
+
+    private void cleanupOldEntries() {
+        Calendar calendar = Calendar.getInstance();
+        calendar.add(Calendar.DAY_OF_YEAR, -MAX_DAYS);
+        String cutoffDate = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(calendar.getTime());
+
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        for (String key : sharedPreferences.getAll().keySet()) {
+            if (key.matches("\\d{4}-\\d{2}-\\d{2}") && key.compareTo(cutoffDate) < 0) {
+                editor.remove(key);
+            }
+        }
+        editor.apply();
     }
 
     private void handleFailure() {
-        Map<String, Double> savedRates = getSavedExchangeRates();
-        // Check if the rates are already fetched today
-        String lastFetchedDate = sharedPreferences.getString(KEY_DATE, null);
-        if (savedRates != null) {
-            countriesList = createCountriesList(savedRates);
-            exchangeRatesDataNote = "Exchange rates are provided by exchangeratesapi.io on " + lastFetchedDate;
-            exchangeRatesMap = getSavedExchangeRates();
-            Log.d(TAG, "Using stored data. Countries List: " + countriesList);
-            Log.d(TAG,"stored exchange rates: "+ exchangeRatesMap);
-        } else {
-            Log.e(TAG, "No data available.");
-        }
+        useMostRecentStoredData();
     }
 
-    private void useStoredData() {
-        Map<String, Double> savedRates = getSavedExchangeRates();
-        // Check if the rates are already fetched today
-        String lastFetchedDate = sharedPreferences.getString(KEY_DATE, null);
-        if (savedRates != null) {
-            exchangeRatesMap = savedRates;
-            countriesList = createCountriesList(savedRates);
-            exchangeRatesDataNote = "Exchange rates are provided by exchangeratesapi.io on "+lastFetchedDate;
-            Log.d(TAG, "Using stored data. Countries List: " + countriesList);
-            Log.d(TAG,"stored exchange rates: "+ exchangeRatesMap);
-        } else {
-            Log.e(TAG, "No data available.");
+    private Map<String, String> createCountriesList(Map<String, BigDecimal> ratesMap) {
+        Map<String, String> result = new HashMap<>();
+        try {
+            InputStream is = context.getAssets().open("countriesToBeDisplayed.json");
+            InputStreamReader reader = new InputStreamReader(is, StandardCharsets.UTF_8);
+            Map<String, String> displayList = new Gson().fromJson(reader, Map.class);
+            for (String code : ratesMap.keySet()) {
+                if (displayList.containsKey(code)) {
+                    result.put(code, displayList.get(code));
+                }
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "JSON error: " + e.getMessage());
         }
+        return result;
+    }
+
+    public Map<String, String> getCountriesList() {
+        return countriesList != null ? new TreeMap<>(countriesList) : new TreeMap<>();
+    }
+
+    public Map<String, BigDecimal> getExchangeRatesMap() {
+        return exchangeRatesMap != null ? exchangeRatesMap : new HashMap<>();
+    }
+
+    public String getExchangeRatesDataNote() {
+        return exchangeRatesDataNote.isEmpty() ? "Exchange rates not available." : exchangeRatesDataNote;
+    }
+
+    public List<BigDecimal> convertCurrency(BigDecimal amount, String from, String to1, String to2) {
+        List<BigDecimal> converted = new ArrayList<>();
+        if (exchangeRatesMap.containsKey(from) &&
+                exchangeRatesMap.containsKey(to1) &&
+                exchangeRatesMap.containsKey(to2)) {
+            BigDecimal fromRate = exchangeRatesMap.get(from);
+            BigDecimal amount1 = amount.multiply(exchangeRatesMap.get(to1)).divide(fromRate, 6, BigDecimal.ROUND_HALF_UP);
+            BigDecimal amount2 = amount.multiply(exchangeRatesMap.get(to2)).divide(fromRate, 6, BigDecimal.ROUND_HALF_UP);
+            converted.add(amount1);
+            converted.add(amount2);
+        } else {
+            converted.add(BigDecimal.ZERO);
+            converted.add(BigDecimal.ZERO);
+        }
+        return converted;
+    }
+
+    private void showToast(String message) {
+        new Handler(Looper.getMainLooper()).post(() ->
+                Toast.makeText(context, message, Toast.LENGTH_SHORT).show());
     }
 
     interface ExchangeRatesApi {
         @retrofit2.http.GET("latest")
         Call<JsonObject> getLatestRates(@retrofit2.http.Query("access_key") String apiKey);
     }
-    public Map<String, String> getCountriesList() {
-        return new TreeMap<>(countriesList);
-    }
-    public Map<String,Double> getExchangeRatesMap(){
-        return exchangeRatesMap;
-    }
 
-    public String getExchangeRatesDataNote() {
-        return exchangeRatesDataNote;
-    }
+    // -------------------- Parcelable --------------------
 
-    public List<Double> convertCurrency(double amount, String fromCurrency, String toCurrency1, String toCurrency2) {
-        List<Double> convertedAmounts = new ArrayList<>();
-        if (exchangeRatesMap != null && exchangeRatesMap.containsKey(fromCurrency)
-                && exchangeRatesMap.containsKey(toCurrency1)
-                && exchangeRatesMap.containsKey(toCurrency2)) {
-            double fromRate = exchangeRatesMap.get(fromCurrency);
-            double toRate1 = exchangeRatesMap.get(toCurrency1);
-            double toRate2 = exchangeRatesMap.get(toCurrency2);
-            double amount1 = amount * (toRate1 / fromRate);
-            double amount2 = amount * (toRate2 / fromRate);
-            convertedAmounts.add(amount1);
-            convertedAmounts.add(amount2);
-        } else {
-            Log.e(TAG, "Invalid currency codes or exchange rates not available.");
-            convertedAmounts.add(0.0);
-            convertedAmounts.add(0.0);
+    protected CurrencyConverterModel(Parcel in) {
+        exchangeRatesDataNote = in.readString();
+        int size = in.readInt();
+        for (int i = 0; i < size; i++) {
+            String key = in.readString();
+            BigDecimal value = new BigDecimal(in.readString());
+            exchangeRatesMap.put(key, value);
         }
-        return convertedAmounts;
+        int countrySize = in.readInt();
+        for (int i = 0; i < countrySize; i++) {
+            countriesList.put(in.readString(), in.readString());
+        }
     }
 
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(exchangeRatesDataNote);
+        dest.writeInt(exchangeRatesMap.size());
+        for (Map.Entry<String, BigDecimal> entry : exchangeRatesMap.entrySet()) {
+            dest.writeString(entry.getKey());
+            dest.writeString(entry.getValue().toPlainString());
+        }
+        dest.writeInt(countriesList.size());
+        for (Map.Entry<String, String> entry : countriesList.entrySet()) {
+            dest.writeString(entry.getKey());
+            dest.writeString(entry.getValue());
+        }
+    }
 
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    public static final Creator<CurrencyConverterModel> CREATOR = new Creator<>() {
+        @Override
+        public CurrencyConverterModel createFromParcel(Parcel in) {
+            return new CurrencyConverterModel(in);
+        }
+
+        @Override
+        public CurrencyConverterModel[] newArray(int size) {
+            return new CurrencyConverterModel[size];
+        }
+    };
 }

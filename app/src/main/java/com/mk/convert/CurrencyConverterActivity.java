@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.core.graphics.Insets;
@@ -12,13 +13,15 @@ import androidx.core.view.WindowInsetsCompat;
 
 import com.mk.controller.CurrencyConverterController;
 import com.mk.model.CurrencyConverterModel;
+import com.mk.utils.CallbackDialog;
 import com.mk.utils.ExpressionEvaluator;
-import com.mk.utils.MapDialog;
 import com.mk.utils.TextFilter;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 public class CurrencyConverterActivity extends BaseActivity{
@@ -57,10 +60,14 @@ public class CurrencyConverterActivity extends BaseActivity{
         //applying input text filters to the textviews
         TextFilter.applyMultipleInputTextFilters(10,19,t1,t2,t3);
 
-        // Initialize the controller
-        controller = new CurrencyConverterController(this);
         // Initialize the model
-        model = new CurrencyConverterModel(this);
+        //model = new CurrencyConverterModel(this);
+        model = (CurrencyConverterModel) getIntent().getParcelableExtra("modelObject");
+        assert model != null;
+        model.setContext(this);
+
+        // Initialize the controller
+        controller = new CurrencyConverterController(this,model);
         exchangeRateNoteTextView.setText(model.getExchangeRatesDataNote());
 
     }
@@ -175,7 +182,21 @@ public class CurrencyConverterActivity extends BaseActivity{
         // get map from model
         Map<String, String> map = model.getCountriesList();
 
-        MapDialog.showMapDialog(this, map, unitName,unitCode);
+        if(map == null){
+            Toast.makeText(this,"Something went wrong!",Toast.LENGTH_SHORT).show();
+        }
+        else
+            //MapDialog.showMapDialog(this, map, unitName,unitCode);
+        {
+            CallbackDialog.showMapDialog(this, map, unitName, unitCode, new CallbackDialog.OnItemSelectedListener() {
+                @Override
+                public void onItemSelected(String key, String value) {
+                    // Handle the selected item here
+                    if(selectedTextViewValue != null)
+                        updateConvertedValues(selectedTextViewValue);
+                }
+            });
+        }
 
     }
 
@@ -230,19 +251,20 @@ public class CurrencyConverterActivity extends BaseActivity{
 
                 try {
 
-                    Double baseRate = model.getExchangeRatesMap().get(baseCurrency);
-                    Double targetRate = model.getExchangeRatesMap().get(targetCurrency);
+                    BigDecimal baseRate = model.getExchangeRatesMap().get(baseCurrency);
+                    BigDecimal targetRate = model.getExchangeRatesMap().get(targetCurrency);
 
                     if (baseRate == null || targetRate == null) {
                         Log.e("CurrencyApp", "Missing exchange rate for base/target currency");
                         continue;
                     }
 
-                    double conversionRate = targetRate / baseRate;
-                    double convertedAmount = resultAmount * conversionRate;
+                    BigDecimal conversionRate = targetRate.divide(baseRate, 6, BigDecimal.ROUND_HALF_UP);
+                    BigDecimal convertedAmount = conversionRate.multiply(BigDecimal.valueOf(resultAmount));
+                            //resultAmount * conversionRate;
 
                     if (i < amounts.size() && amounts.get(i) != null) {
-                        amounts.get(i).setText(String.format("%.4f", convertedAmount));
+                        amounts.get(i).setText(String.format(Locale.getDefault(),"%.4f", convertedAmount.doubleValue()));
                     }
                 } catch (Exception e) {
                     Log.e("CurrencyApp", "Error during conversion: " + e.getMessage(), e);

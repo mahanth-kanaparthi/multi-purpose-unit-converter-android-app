@@ -9,8 +9,14 @@ import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
 import androidx.core.graphics.Insets;
+import androidx.core.splashscreen.SplashScreen;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+
+import com.mk.model.CurrencyConverterModel;
+
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -20,8 +26,11 @@ public class MainActivity extends AppCompatActivity {
             bmiCardView,gstCardView,pressureCardView,energyCardView,forceCardView;
     Animation button_anim;
 
+    private CurrencyConverterModel currencyConverterModel;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        SplashScreen.installSplashScreen(this);  // This line does the magic!
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_main);
@@ -34,10 +43,17 @@ public class MainActivity extends AppCompatActivity {
 
         setListenersForActivities();
 
+        // Start async task to load exchange rates
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        executor.execute(() -> {
+            currencyConverterModel = new CurrencyConverterModel(getApplicationContext());
+        });
+
 
     }
     private void startCurrencyActivity(){
         Intent intent = new Intent(this, CurrencyConverterActivity.class);
+        intent.putExtra("modelObject",currencyConverterModel);
         startActivity(intent);
     }
 

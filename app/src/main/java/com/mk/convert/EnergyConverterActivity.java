@@ -10,14 +10,12 @@ import androidx.core.view.WindowInsetsCompat;
 
 import com.mk.controller.EnergyConverterController;
 import com.mk.model.EnergyConverterModel;
-import com.mk.utils.MapDialog;
 import com.mk.utils.TextFilter;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Locale;
-import java.util.Map;
 
 public class EnergyConverterActivity extends BaseActivity{
 
@@ -52,7 +50,7 @@ public class EnergyConverterActivity extends BaseActivity{
 
         model = new EnergyConverterModel(this);
         controller = new EnergyConverterController(model,this);
-
+        dataMap = model.getEnergyUnitsWithCodes();
 
     }
     protected void initializeViews(){
@@ -116,34 +114,21 @@ public class EnergyConverterActivity extends BaseActivity{
         });
     }
 
-    private void showDialog(TextView unitName,TextView unitCode){
-        // get map from model
-        Map<String, String> map = model.getEnergyUnitsWithCodes();
-
-        MapDialog.showMapDialog(this, map, unitName,unitCode);
-
-    }
 
     @Override
     protected void updateConvertedValues(TextView selectedValue) {
-
         int idx = values.indexOf(selectedValue);
         int targetIdx = (idx + 1) % 2;
         TextView targetUnitTextViewValue = (TextView) values.get(targetIdx);
 
-        String resultText = String.format(Locale.getDefault(),"%.6f", controller.performConversion(selectedValue));
-        if(resultText.endsWith(".000000")){
-            resultText = resultText.substring(0, resultText.length() - 7);
-        }else if(resultText.endsWith("00000")){
-            resultText = resultText.substring(0, resultText.length() - 5);
-        }else if(resultText.endsWith("0000")){
-            resultText = resultText.substring(0, resultText.length() - 4);
-        }else if(resultText.endsWith("000")){
-            resultText = resultText.substring(0, resultText.length() - 3);
-        }else if(resultText.endsWith("00")){
-            resultText = resultText.substring(0, resultText.length() - 2);
-        }
-        if(resultText.isEmpty()){
+        // Get the converted value as BigDecimal
+        BigDecimal result = BigDecimal.valueOf(controller.performConversion(selectedValue));
+
+        // Strip trailing zeros and format to plain string
+        String resultText = result.stripTrailingZeros().toPlainString();
+
+        // Handle edge case where result is empty (e.g., 0.000000)
+        if (resultText.isEmpty()) {
             resultText = "0";
         }
 

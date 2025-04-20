@@ -267,6 +267,7 @@
     <string name="force_converter_icon">force_icon</string>
     <string name="energy_converter_icon">energy_icon</string>
     <string name="pressure_converter_icon">pressure_icon</string>
+    <string name="app_logo">converter_app_logo</string>
 
 
 </resources>

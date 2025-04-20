@@ -13,7 +13,6 @@ import androidx.core.view.WindowInsetsCompat;
 import com.mk.controller.NumeralsConverterController;
 import com.mk.model.NumeralsConverterModel;
 import com.mk.utils.CallbackDialog;
-import com.mk.utils.MapDialog;
 import com.mk.utils.TextFilter;
 
 import java.util.ArrayList;
@@ -164,6 +163,8 @@ public class NumeralsConverterActivity extends BaseActivity{
             public void onItemSelected(String key, String value) {
                 // Handle the selected item here
                 toggleButtons(value);
+                if(selectedTextView != null)
+                    updateConvertedValues(selectedTextViewValue);
             }
         });
 

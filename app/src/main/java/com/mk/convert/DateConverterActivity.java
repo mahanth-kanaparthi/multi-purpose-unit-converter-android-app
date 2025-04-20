@@ -17,6 +17,7 @@ import androidx.core.view.WindowInsetsCompat;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 
 import java.util.Calendar;
+import java.util.Locale;
 
 public class DateConverterActivity extends AppCompatActivity {
 
@@ -175,7 +176,7 @@ public class DateConverterActivity extends AppCompatActivity {
         int day = date.get(Calendar.DAY_OF_MONTH);
         String month = new java.text.DateFormatSymbols().getMonths()[date.get(Calendar.MONTH)];
         int year = date.get(Calendar.YEAR);
-        return String.format("%s %d, %d", month, day, year);
+        return String.format(Locale.getDefault(),"%s %d, %d", month, day, year);
     }
 }
 

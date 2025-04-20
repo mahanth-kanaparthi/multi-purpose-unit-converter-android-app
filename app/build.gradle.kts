@@ -41,6 +41,7 @@ dependencies {
     implementation(libs.volley)
     implementation(libs.retrofit)
     implementation(libs.converterGson)
+    implementation(libs.splashScreen)
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
