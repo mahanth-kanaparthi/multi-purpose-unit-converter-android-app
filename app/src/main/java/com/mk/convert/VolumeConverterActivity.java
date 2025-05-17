@@ -10,6 +10,7 @@ import androidx.core.view.WindowInsetsCompat;
 
 import com.mk.controller.VolumeConverterController;
 import com.mk.model.VolumeConverterModel;
+import com.mk.utils.NumberResultFormatter;
 import com.mk.utils.TextFilter;
 
 import java.math.BigDecimal;
@@ -52,7 +53,7 @@ public class VolumeConverterActivity extends BaseActivity {
         controller = new VolumeConverterController(model,this);
         dataMap = model.getVolumeUnitsWithCodes();
 
-
+        unit1Value.performClick();
     }
     protected void initializeViews(){
         selectedTextView=null;
@@ -123,7 +124,8 @@ public class VolumeConverterActivity extends BaseActivity {
         TextView targetUnitTextViewValue = (TextView) values.get(targetIdx);
 
         // Get the converted value as BigDecimal
-        BigDecimal result = BigDecimal.valueOf(controller.performConversion(selectedValue));
+        BigDecimal result = NumberResultFormatter
+                .format(BigDecimal.valueOf(controller.performConversion(selectedValue)));
 
         // Strip trailing zeros and format to plain string
         String resultText = result.stripTrailingZeros().toPlainString();

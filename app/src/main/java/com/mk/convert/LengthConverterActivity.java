@@ -11,6 +11,7 @@ import androidx.core.view.WindowInsetsCompat;
 
 import com.mk.controller.LengthConverterController;
 import com.mk.model.LengthConverterModel;
+import com.mk.utils.NumberResultFormatter;
 import com.mk.utils.TextFilter;
 
 import java.math.BigDecimal;
@@ -53,6 +54,7 @@ public class LengthConverterActivity extends BaseActivity {
         controller = new LengthConverterController(model,this);
         dataMap = model.getLengthUnitsWithCodes();
 
+        unit1Value.performClick();
     }
     protected void initializeViews(){
         selectedTextView=null;
@@ -123,10 +125,11 @@ public class LengthConverterActivity extends BaseActivity {
         TextView targetUnitTextViewValue = (TextView) values.get(targetIdx);
 
         // Get the converted value as BigDecimal
-        BigDecimal result = BigDecimal.valueOf(controller.performConversion(selectedValue));
+        BigDecimal result = NumberResultFormatter
+                .format(BigDecimal.valueOf(controller.performConversion(selectedValue)));
 
         // Strip trailing zeros and format to plain string
-        String resultText = result.stripTrailingZeros().toPlainString();
+        String resultText = result.toPlainString();
 
         // Handle edge case where result is empty (e.g., 0.000000)
         if (resultText.isEmpty()) {

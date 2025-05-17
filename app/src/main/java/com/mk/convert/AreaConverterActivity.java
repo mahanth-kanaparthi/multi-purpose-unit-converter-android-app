@@ -11,6 +11,7 @@ import androidx.core.view.WindowInsetsCompat;
 
 import com.mk.controller.AreaConverterController;
 import com.mk.model.AreaConverterModel;
+import com.mk.utils.NumberResultFormatter;
 import com.mk.utils.TextFilter;
 
 import java.math.BigDecimal;
@@ -53,7 +54,7 @@ public class AreaConverterActivity extends BaseActivity {
         controller = new AreaConverterController(model,this);
 
         dataMap = model.getAreaUnitsWithCodes();
-
+        unit1Value.performClick();
     }
     protected void initializeViews(){
         selectedTextView=null;
@@ -124,10 +125,11 @@ public class AreaConverterActivity extends BaseActivity {
         TextView targetUnitTextViewValue = (TextView) values.get(targetIdx);
 
         // Get the converted value as BigDecimal
-        BigDecimal result = BigDecimal.valueOf(controller.performConversion(selectedValue));
+        BigDecimal result = NumberResultFormatter
+                .format(BigDecimal.valueOf(controller.performConversion(selectedValue)));
 
-        // Strip trailing zeros and format to plain string
-        String resultText = result.stripTrailingZeros().toPlainString();
+        // Strip trailing zeros and format to plain string {result.stripTrailingZeros().toPlainString();}
+        String resultText = result.toPlainString();
 
         // Handle edge case where result is empty (e.g., 0.000000)
         if (resultText.isEmpty()) {

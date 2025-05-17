@@ -56,6 +56,8 @@ public class NumeralsConverterActivity extends BaseActivity{
         model = new NumeralsConverterModel(this);
         controller = new NumeralsConverterController(model,this);
 
+        unit1Value.performClick();
+
     }
     protected void initializeViews(){
         selectedTextView=null;

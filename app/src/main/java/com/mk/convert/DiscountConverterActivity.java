@@ -19,6 +19,7 @@ import androidx.core.view.WindowInsetsCompat;
 import java.math.BigDecimal;
 import java.math.MathContext;
 import java.text.DecimalFormat;
+import java.util.Locale;
 
 public class DiscountConverterActivity extends BaseActivity {
 
@@ -42,7 +43,7 @@ public class DiscountConverterActivity extends BaseActivity {
         setupExtraListeners();
         setupListeners();
 
-
+        originalPriceValue.performClick();
     }
     protected void initializeViews(){
         selectedTextView = null;
@@ -101,7 +102,7 @@ public class DiscountConverterActivity extends BaseActivity {
     // Method to recalculate final price
     private void updateFinalPrice() {
         double finalPriceResult = performConversion();
-        finalPriceValue.setText(String.format("%.2f", finalPriceResult));
+        finalPriceValue.setText(String.format(Locale.getDefault(),"%.2f", finalPriceResult));
     }
 
     @Override

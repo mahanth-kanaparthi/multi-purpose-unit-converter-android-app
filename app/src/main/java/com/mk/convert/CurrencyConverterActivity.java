@@ -69,7 +69,7 @@ public class CurrencyConverterActivity extends BaseActivity{
         // Initialize the controller
         controller = new CurrencyConverterController(this,model);
         exchangeRateNoteTextView.setText(model.getExchangeRatesDataNote());
-
+        t1.performClick();
     }
 
     private void initializeActivitySpecificResources(){
