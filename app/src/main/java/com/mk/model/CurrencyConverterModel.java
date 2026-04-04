@@ -41,7 +41,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class CurrencyConverterModel implements Parcelable {
     private static final String PREF_NAME = "CurrencyPrefsV2";
     private static final String TAG = "CurrencyConverterModelV2";
-    private static final String API_KEY = "facc327a2e014ce090fea191c671cb7c";
+    private static final String API_KEY = "YOUR_EXCHANGERATESAPI.IO_API_KEY";
     private static final int MAX_DAYS = 5;
 
     private transient SharedPreferences sharedPreferences;
